@@ -1,7 +1,10 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.IO;
 using CsvHelper;
+using MatthiWare.CommandLine;
 using MockingData.DataMockers;
+using MockingData.Utils;
 
 namespace MockingData
 {
@@ -9,18 +12,28 @@ namespace MockingData
     {
         static void Main(string[] args)
         {
-            LinearMocker linearMocker = new LinearMocker(coefficient: 1.5, constant: 5, noiseRange: 2, minimumValue: 20, maximumValue: 200, numberOfSamples: 200);
+            var parser = new CommandLineParser<Options>();
+
+            var results = parser.Parse(args);
+
+            if(results.HasErrors)
+            {
+                Console.WriteLine("Had Errors parsing the arguments");
+                return;
+            }
+
+            var optionsArgs = results.Result;
+
+            LinearMocker linearMocker = new LinearMocker(optionsArgs.coefficient,optionsArgs.constant,optionsArgs.noiseRange, optionsArgs.minimumValue, optionsArgs.maximumValue, optionsArgs.numberOfSamples);
 
             linearMocker.Mock();
 
-            string filename;
-            if(!string.IsNullOrWhiteSpace(args[0]))
-                filename = args[0];
-            else 
-                filename = "defaultName";
+            if (string.IsNullOrWhiteSpace(optionsArgs.filename))
+                optionsArgs.filename = "defaultName";
 
-            using(var writer = new StreamWriter("F:\\MockedData\\" + filename +".csv" ))
-            using(var csv = new CsvWriter(writer)){
+            using (var writer = new StreamWriter( optionsArgs.path +"\\"+ optionsArgs.filename + ".csv"))
+            using (var csv = new CsvWriter(writer))
+            {
                 csv.WriteRecords(linearMocker.values);
             }
         }
