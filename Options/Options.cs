@@ -4,9 +4,7 @@ namespace MockingData.Utils
     public class Options
     {
         [Name("C", "coefficient"), Description("The constant multiplier of x")]
-        public double coefficient { get; set; }
-        [Name("c","constant"), Description("The isolated constant")]
-        public double constant { get; set; }
+        public string coefficient { get; set; }
         [Name("n","noiserange"), Description("The noise limit")]
         public double noiseRange { get; set; }
         [Name("m", "minimum"), Description("The minimum value of x, the starting point of x")]
